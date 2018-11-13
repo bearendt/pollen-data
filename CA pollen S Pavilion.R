@@ -176,7 +176,8 @@ require(ggplot2)
 library(ggrepel)
 Plot1 <- ggplot(rowscores, aes(x=rowscores$Dim1,y=rowscores$Dim2))+
   geom_point(shape=21, size=5, colour="black", fill="cornflower blue")+
-  #geom_text(aes(label=CA_MCD_Phase1$unit),vjust=-.6, cex=5)+
+  xlim(-2,8) +
+  yling (-6, 6) +
   geom_text_repel(aes(label=rownames(rowscores)), cex=6) +
   theme_classic()+
   labs(x="Dimension 1", y="Dimension 2")+
@@ -185,7 +186,6 @@ Plot1 <- ggplot(rowscores, aes(x=rowscores$Dim1,y=rowscores$Dim2))+
 
 Plot2 <- ggplot(colscores, aes(x=colscores$Dim1,y=colscores$Dim2))+
   geom_point(shape=21, size=5, colour="black", fill="cornflower blue")+
-  #geom_text(aes(label=CA_MCD_Phase1$unit),vjust=-.6, cex=5)+
   geom_text_repel(aes(label=rownames(colscores)), cex=6) +
   theme_classic()+
   labs(x="Dimension 1", y="Dimension 2")+
