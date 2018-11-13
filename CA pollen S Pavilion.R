@@ -28,34 +28,25 @@ SPav$Elevation<- NULL
 
 library(reshape2)
 #melt the data into three columns
-SPavMelted <- melt(SPav, id= 'Context')
+Spav1 <- SPav [-c(24,25),]
+SPavMelted <- melt(Spav1, id= 'Context')
+
+#replace NA with 0
+SPavMelted[is.na(SPavMelted)]<-0
 
 
 #######################################################################
-# put the  data frames together
+
 
 #remove Indeterminate
 SPavMelted1 <- subset(SPavMelted, ! SPavMelted$variable %in% c('Total.Pollen.Sum', 'Indeterminate', 
                                         'Lycopodium.Tracers', 'Concentration.Value'))
 
-contexts <- as.data.frame(table(SPavMelted1$Context), stringsAsFactors =F)
-contexts <- contexts[order(contexts$Var1),]
-# print out the context names and look for contexts that need to be deleted
-contexts
-
-# get rid of PZ and outlier contexts
-SPavMelted2 <- subset(SPavMelted1, ! SPavMelted1$Context %in% c('2588F'))
-
-#SPavMelted1 <- subset(SPavMelted, ! SPavMelted$variable %in%
-  #                  c('Indeterminate', 'Ailanthus'))
 # transpose into a matrix
-SPDataTransp <- acast(SPavMelted2, Context ~ variable,
+SPDataTransp <- acast(SPavMelted1, Context ~ variable,
       sum,
       value.var='value')
-#remove first row
-SPDataTransp = SPDataTransp[-1, ]
-#replace NA with 0
-SPDataTransp[is.na(SPDataTransp)] <- 0
+
 
 # check the sample sizes
 rowSums(SPDataTransp)
@@ -123,11 +114,15 @@ op<-par(mfrow=c(1,1))
 
 #######################################################
 # scatter plots of dim scores
+
 library (maptools)
+par(mfrow=c(1,1))
+
 plot(caResult$rowcoord[,1],caResult$rowcoord[,2],pch=21, cex=3, bg= adjustcolor("red", alpha.f=.5),
      xlab="Dimension 1", 
      ylab="Dimension 2", 
-   #  xlim= c(-3, 3),
+     xlim= c(-2, 8),
+     ylim = c(-6,6),
      cex.lab=1.5, cex.axis=1.5)
 abline(h=0,v=0, col='grey')    
 pointLabel(caResult$rowcoord[,1],caResult$rowcoord[,2], caResult$rownames)
@@ -176,16 +171,19 @@ require(ggplot2)
 library(ggrepel)
 Plot1 <- ggplot(rowscores, aes(x=rowscores$Dim1,y=rowscores$Dim2))+
   geom_point(shape=21, size=5, colour="black", fill="cornflower blue")+
-  xlim(-2,8) +
-  yling (-6, 6) +
+  xlim(-2, 8)+
+  ylim(-6,6)+
+  #geom_text(aes(label=CA_MCD_Phase1$unit),vjust=-.6, cex=5)+
   geom_text_repel(aes(label=rownames(rowscores)), cex=6) +
   theme_classic()+
   labs(x="Dimension 1", y="Dimension 2")+
+ 
   theme(plot.title=element_text(size=rel(2.25), hjust=0.5),axis.title=element_text(size=rel(1.75)),
         axis.text=element_text(size=rel(1.5)))
 
 Plot2 <- ggplot(colscores, aes(x=colscores$Dim1,y=colscores$Dim2))+
   geom_point(shape=21, size=5, colour="black", fill="cornflower blue")+
+  #geom_text(aes(label=CA_MCD_Phase1$unit),vjust=-.6, cex=5)+
   geom_text_repel(aes(label=rownames(colscores)), cex=6) +
   theme_classic()+
   labs(x="Dimension 1", y="Dimension 2")+
